@@ -1,0 +1,25 @@
+# Public repo allowlist. Everything is ignored unless explicitly listed below.
+*
+
+!/.gitignore
+!/README.md
+
+!/device-kernel-port/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/
+
+!/device-kernel-port/lenovo_sp101fu_4.19.193/compare/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/compare/*.md
+!/device-kernel-port/lenovo_sp101fu_4.19.193/compare/*.txt
+!/device-kernel-port/lenovo_sp101fu_4.19.193/compare/*.diff
+
+!/device-kernel-port/lenovo_sp101fu_4.19.193/config/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/config/*.md
+!/device-kernel-port/lenovo_sp101fu_4.19.193/config/*.config
+!/device-kernel-port/lenovo_sp101fu_4.19.193/config/validation-*.txt
+
+!/device-kernel-port/lenovo_sp101fu_4.19.193/scripts/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/scripts/*.sh
+
+!/device-kernel-port/lenovo_sp101fu_4.19.193/root-evidence/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/root-evidence/manifests/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/root-evidence/manifests/key-blobs.md

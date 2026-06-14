@@ -1,0 +1,7 @@
+# public-supported
+merge_rc=0 make_rc=0
+out=/private/tmp/rk3566_kernel_build/out-sp101fu-config-validate-public-supported
+log=/Users/driezy/yoga paper/device-kernel-port/lenovo_sp101fu_4.19.193/logs/config-merge-public-supported.log
+missing requested symbols after olddefconfig:
+
+merge warnings:
