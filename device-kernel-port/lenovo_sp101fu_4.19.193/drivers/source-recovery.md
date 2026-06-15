@@ -107,7 +107,9 @@ MXC6655 accelerometer probe successfully. The Huion (`3-0008`) and HDX8801
 multi-panel residue.
 
 For a maintainable 5.10, 6.1, or mainline port, `ht_ebc.px` remains the hard
-blocker. The surrounding PMIC, Wacom, Goodix, Huion, HDX, Hall, light/proximity,
-SAR, and fingerprint drivers have usable source candidates, but the EBC core
-would still need a source replacement, a compatibility layer around a fixed
+blocker. The surrounding PMIC, Wacom, Goodix, Hall, light/proximity, SAR, and
+fingerprint drivers have usable source candidates. Huion and HDX source
+candidates also exist for reference, but the tailored SP101FU baseline disables
+those two touchscreen drivers because this hardware uses Goodix GT9886. The EBC
+core would still need a source replacement, a compatibility layer around a fixed
 object ABI, or a rewrite based on public RK EBC work.

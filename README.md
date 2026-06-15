@@ -21,10 +21,11 @@ A complete arm64 kernel now builds from an integrated HTFY/Rockchip 4.19 source
 tree (`4.19.232`, based on the `Supernote-Ratta/kernel_Nomad_Manta` HT E Ink
 source set plus the recovered vendor drivers) using a GCC 15 cross toolchain.
 See `device-kernel-port/lenovo_sp101fu_4.19.193/config/build-status.md` for the
-build environment and the two GCC-specific issues that had to be solved. The
+build environment and the GCC-specific issues that had to be solved. The
 public Rockchip 4.19 tree alone is still not sufficient — it lacks the
 Lenovo/HT board drivers (HTFY EBC stack, TPS65185/SY7636A EBC PMIC glue, Goodix
-GTX8/GT9886 touch, Wacom 10S12MI pen, WH2506D Hall, Huion/HDX input, sensors) —
+GTX8/GT9886 touch, Wacom 10S12MI pen, WH2506D Hall, sensors, and the vendor
+multi-panel Huion/HDX input drivers) —
 which is why the integrated vendor tree is used. The HTFY EBC core ships as a
 prebuilt object (`ht_ebc.px`) and remains the hard blocker for forward porting.
 
@@ -38,7 +39,8 @@ The live tablet is not a byte-for-byte match for any public board. It reports:
 Hardware confirmed absent on the live device (rooted ADB evidence) and disabled
 in our config/DTS: camera (RKISP/CIF/CSI) and fingerprint reader. The Huion and
 HDX8801 touch panels are vendor multi-panel residue whose probes fail on this
-device (it uses Goodix GT9886); they are slated for trimming next.
+device (it uses Goodix GT9886); they are now disabled in the SP101FU config and
+DTS while Goodix remains enabled.
 
 ## Published Materials
 
@@ -51,8 +53,8 @@ device (it uses Goodix GT9886); they are slated for trimming next.
   self-compilable baseline: build environment, produced artifacts, and the
   GCC-specific issues (warning wall, huiontablet link fix) that were solved.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/sp101fu-live-required.config`
-  tracks the live machine-required config intent, including missing vendor
-  symbols.
+  tracks the tailored live-machine config intent for the integrated tree,
+  including the current Goodix-enabled, Huion/HDX-disabled trim state.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/sp101fu-public-4.19-supported.config`
   is the subset verified to survive `olddefconfig` in the current public
   Rockchip 4.19 checkout.

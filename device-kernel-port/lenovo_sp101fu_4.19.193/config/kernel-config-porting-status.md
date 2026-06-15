@@ -15,19 +15,22 @@ integrated into the build tree, which now compiles to a complete kernel Image; s
 
 ## Files created
 
-- `sp101fu-live-required.config`: full machine-required intent, including
-  missing vendor symbols.
+- `sp101fu-live-required.config`: tailored machine-required intent for the
+  integrated tree, including the current Goodix-enabled, Huion/HDX-disabled
+  trim state.
 - `sp101fu-public-4.19-supported.config`: subset verified to survive
   `olddefconfig` in the current public Rockchip 4.19 tree.
 - `validation-public-supported.txt`: public subset validation.
-- `validation-live-required.txt`: full required fragment validation.
+- `validation-live-required.txt`: integrated-tree required fragment and rebuild
+  validation.
 
 ## Validation result
 
 The public-supported fragment survives `olddefconfig` with no dropped requested
 symbols.
 
-The full live-required fragment drops these requested symbols:
+In the public Rockchip-only checkout, the original full live-required fragment
+dropped these vendor-board symbols because the source was not present there:
 
 - `CONFIG_MALI_MEMORY_GROUP_MANAGER`
 - `CONFIG_MALI_MIDGARD_FOR_ANDROID`
@@ -38,8 +41,6 @@ The full live-required fragment drops these requested symbols:
 - `CONFIG_HTFY_DUMP`
 - `CONFIG_HTFY_DEBUG`
 - `CONFIG_TOUCHSCREEN_GOODIX_GTX8`
-- `CONFIG_TOUCHSCREEN_HUION_PANELS`
-- `CONFIG_TOUCHSCREEN_HDX8801`
 - `CONFIG_I2C_HID_WACOM_9013`
 - `CONFIG_I2C_HID_WACOM_10S12MI`
 - `CONFIG_LS_STK3x1x`
@@ -49,6 +50,14 @@ The full live-required fragment drops these requested symbols:
 
 This matches the public-source research: `rk3566-rk817-eink-w103` is the closest
 reference line, but it is not the Lenovo BOE DVT1 board.
+
+The current integrated HTFY/Rockchip build tree is different from that
+public-only validation target: the recovered vendor driver set is integrated,
+and the tailored SP101FU fragment now intentionally disables the vendor
+multi-panel Huion/HDX touchscreen drivers while keeping Goodix GTX8 enabled.
+`olddefconfig` preserves that trimmed state, and a clean rebuild without
+`KCFLAGS` produces `Image` and `rk3566-lenovo-sp101fu.dtb`; see
+`validation-live-required.txt` and `build-status.md`.
 
 The vendor `/proc/config.gz` also enables reference-platform camera and
 fingerprint options, but this SP101FU hardware has neither. The tailored build
@@ -98,14 +107,16 @@ Module compatibility note:
 2. Merge `sp101fu-public-4.19-supported.config` for public Rockchip builds.
 3. Derive a Lenovo board DTS from `live-fdt.dts`, not directly from `w103`.
 4. DONE: the missing vendor drivers (HTFY EBC, TPS65185/SY7636A EBC PMIC glue,
-   Wacom 10S12MI, Goodix GTX8, Huion/HDX, WH2506D, LTR578/STK3x1x/AW9610X) have
-   been integrated into the build tree, so `sp101fu-live-required.config` now
+   Wacom 10S12MI, Goodix GTX8, WH2506D, LTR578/STK3x1x/AW9610X, plus optional
+   Huion/HDX source candidates) have been integrated into the build tree, so
+   `sp101fu-live-required.config` now
    survives Kconfig and the tree builds a complete kernel Image (see `build-status.md`).
 5. The baseline builds with GCC. Android Clang 11/LLD 11 would only be needed
    for byte/ABI parity with the stock kernel, which is not the goal.
 6. If preserving `bcmdhd.ko`, keep `UTS_RELEASE`, `PREEMPT`, `MODVERSIONS`, and
    exported symbol CRCs compatible, or rebuild BCMDHD from source.
-7. Trim config and DTS to hardware actually present (camera and fingerprint
-   already disabled; Huion/HDX touch next), then carry the trimmed baseline
-   forward toward newer/mainline kernels. The `ht_ebc.px` binary blob remains
-   the hard blocker for that forward port.
+7. DONE: trim config and DTS to hardware actually present for the first pass:
+   camera, fingerprint, Huion touch, and HDX8801 touch are disabled while
+   Goodix GT9886 remains enabled. Carry this trimmed baseline forward toward
+   newer/mainline kernels. The `ht_ebc.px` binary blob remains the hard blocker
+   for that forward port.

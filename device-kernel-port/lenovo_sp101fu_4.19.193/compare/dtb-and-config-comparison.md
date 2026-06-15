@@ -90,9 +90,10 @@ Important live config symbols missing or changed in the public-source `olddefcon
 - `CONFIG_AW9610X_SAR=y`
 - `CONFIG_HS_WH2506D=y`
 
-The live vendor config also enables some reference-platform options that are
-not target hardware for this tablet. The tailored SP101FU build keeps
-fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled.
+The live vendor config also enables some reference-platform and multi-panel
+probe options that are not target hardware for this tablet. The tailored SP101FU
+build keeps fingerprint, UVC camera, Rockchip CIF, RKISP, RK628 CSI, Huion
+touch, and HDX8801 touch disabled, while Goodix GTX8/GT9886 remains enabled.
 
 Stable/common config facts:
 
@@ -144,5 +145,6 @@ FDT plus the vendor driver/Kconfig set for HTFY EBC, PMIC EBC, Wacom 10S12MI,
 Goodix GTX8/GT9886, WH2506D Hall, Lenovo frontlight, and sensors. That driver
 set has now been integrated and the tree builds a complete kernel Image (see
 `../config/build-status.md`); the public Rockchip 4.19 tree alone is still not
-sufficient. The Huion/HDX touch panels can be trimmed (probes fail on this
-hardware), continuing the camera/fingerprint trimming already done.
+sufficient. The Huion/HDX touch panels have been trimmed in the tailored
+SP101FU config and DTS (probes fail on this hardware), continuing the
+camera/fingerprint trimming already done.

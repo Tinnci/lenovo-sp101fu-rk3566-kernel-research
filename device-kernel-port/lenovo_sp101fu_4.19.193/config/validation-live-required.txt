@@ -3,3 +3,24 @@ make_rc=0
 out=/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy
 log=/Users/driezy/yoga paper/device-kernel-port/lenovo_sp101fu_4.19.193/logs/private-integrate-olddefconfig-htfy.log
 all requested symbols preserved after olddefconfig
+
+# trim-olddefconfig
+make_rc=0
+out=/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy
+log=/Users/driezy/yoga paper/device-kernel-port/lenovo_sp101fu_4.19.193/logs/trim-olddefconfig.log
+CONFIG_TOUCHSCREEN_GOODIX_GTX8=y preserved
+CONFIG_TOUCHSCREEN_HUION_PANELS remains disabled
+CONFIG_TOUCHSCREEN_HDX8801 remains disabled
+
+# trim-rebuild-no-kcflags
+make_target=Image dtbs
+make_rc=0
+out=/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy
+log=/Users/driezy/yoga paper/device-kernel-port/lenovo_sp101fu_4.19.193/logs/trim-rebuild-no-kcflags.log
+KCFLAGS unset
+Image=/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy/arch/arm64/boot/Image
+Image_size=31367176
+dtb=/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy/arch/arm64/boot/dts/rockchip/rk3566-lenovo-sp101fu.dtb
+dtb_size=122427
+goodix_gtx8_object_present=drivers/input/touchscreen/gtx8/goodix_ts_core.o
+huion_hdx_touchscreen_objects_absent=yes

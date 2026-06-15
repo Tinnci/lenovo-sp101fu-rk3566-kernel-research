@@ -53,7 +53,7 @@ does not reliably handle that in every invocation. If it splits the path at
 `/Users/driezy/yoga`, copy the fragment to a temporary path without spaces first,
 for example `/private/tmp/rk3566_kernel_build/sp101fu-config-fragments/`.
 
-After vendor driver sources are imported, merge the full required fragment:
+In the integrated HTFY/Rockchip tree, merge the tailored live-required fragment:
 
 ```sh
 scripts/kconfig/merge_config.sh -m .config \
@@ -62,7 +62,9 @@ make ARCH=arm64 olddefconfig
 ```
 
 Any symbol that disappears after `olddefconfig` is not supported by the current
-source tree. Treat it as a source/Kconfig gap, not as a config typo.
+source tree. Treat it as a source/Kconfig gap, not as a config typo. In the
+current integrated tree, `olddefconfig` preserves the SP101FU trim state:
+Goodix GTX8 remains enabled while Huion/HDX touchscreen drivers remain disabled.
 
 ## Toolchain note
 
@@ -81,7 +83,7 @@ The self-compilable baseline builds with a GCC cross toolchain
 suppressing newer warnings that the vendor's Clang whitelist never saw, because
 the tree's `scripts/gcc-wrapper.py` treats any non-whitelisted warning as a
 fatal error. See `build-status.md` for the full build environment, the
-`-Wno-*`/`KCFLAGS` warning-wall workaround, and the huiontablet link fix.
+`arch/arm64/Makefile` warning-wall hardening, and the huiontablet link fix.
 
 ## Vendor driver set (now integrated)
 
@@ -103,7 +105,10 @@ tree:
 
 These have since been recovered (mostly from `Supernote-Ratta/kernel_Nomad_Manta`,
 see `../drivers/source-recovery.md`) and integrated into the build tree, which
-now compiles into a complete kernel Image (see `build-status.md`). The HTFY EBC core
+now compiles into a complete kernel Image (see `build-status.md`). The Huion and
+HDX driver sources remain available as reference multi-panel support, but the
+tailored SP101FU config disables them because this hardware uses Goodix GT9886.
+The HTFY EBC core
 ships as a prebuilt object (`ht_ebc.px`), so `CONFIG_HTFY_EBC` is satisfied by a
 binary blob, not open source — this is the remaining blocker for forward porting
 to 5.10/6.1/mainline.
@@ -113,16 +118,23 @@ hardware has no camera or fingerprint reader, so the tailored build keeps
 fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled even if
 they appear in `/proc/config.gz` or inherited candidate DTS files. The Huion and
 HDX8801 touch panels are likewise vendor multi-panel residue (their probes fail
-on this device, which uses Goodix GT9886) and are next to be trimmed.
+on this device, which uses Goodix GT9886) and are disabled in
+`sp101fu-live-required.config` plus the SP101FU DTS.
 
-## Validation in current public Rockchip 4.19 tree
+## Validation status
 
-Validated fragments:
+Public Rockchip-only validation:
 
 - `sp101fu-public-4.19-supported.config`: all requested symbols survive
   `olddefconfig`.
-- `sp101fu-live-required.config`: the Lenovo/HT vendor symbols are dropped by
-  `olddefconfig`, confirming Kconfig/source support is missing.
+- The original full live-required fragment dropped Lenovo/HT vendor symbols
+  there, confirming the public-only tree lacked the required source/Kconfig.
+
+Integrated HTFY/Rockchip validation:
+
+- `sp101fu-live-required.config`: the tailored fragment survives `olddefconfig`.
+- `make Image dtbs` completes without external `KCFLAGS`.
+- The output config keeps Goodix GTX8 enabled and Huion/HDX disabled.
 
 Validation reports:
 

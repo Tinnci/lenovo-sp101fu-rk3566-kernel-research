@@ -17,7 +17,8 @@ BT MAC.
 - E Ink panel timing, mirror flag, DPI, dimensions, and VCOM value
 - dual warm/cold PWM frontlight nodes
 - Goodix GT9886 touch node
-- Wacom 10S12MI, Huion, and HDX8801 pen/input candidate nodes
+- Wacom 10S12MI pen node
+- disabled Huion and HDX8801 touch residue nodes retained for traceability
 - TPS65185 and SY7636A E Ink PMIC nodes and GPIO mapping
 - WH2506D Hall sensor
 - LTR578, STK3x1x, AW9610X SAR, MXC6655XA, and ET7303 board peripherals
@@ -34,6 +35,8 @@ BT MAC.
 
 ## Current status
 
-This DTS can be compiled as a syntax check against the current public Rockchip
-4.19 source tree, but it is not sufficient for a working kernel until the
-missing Lenovo/HT vendor drivers and Kconfig entries are recovered or replaced.
+This DTS is integrated into the private HTFY/Rockchip 4.19 build tree and
+produces `arch/arm64/boot/dts/rockchip/rk3566-lenovo-sp101fu.dtb` as part of a
+clean `make Image dtbs` rebuild. Goodix GT9886 is enabled; Huion and HDX8801 are
+left present but `status = "disabled"` because live probe evidence shows they
+are unused multi-panel residue on this SP101FU hardware.

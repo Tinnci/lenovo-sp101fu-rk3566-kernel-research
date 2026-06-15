@@ -276,7 +276,7 @@
 	};
 
 	huion: huion@8 {
-		status = "okay";
+		status = "disabled";
 		compatible = "huion,hgtxx";
 		reg = <0x08>;
 		pinctrl-names = "default";
@@ -294,7 +294,7 @@
 	};
 
 	hdx8801: hdx8801@11 {
-		status = "okay";
+		status = "disabled";
 		compatible = "hdx8801_touch";
 		reg = <0x11>;
 		pinctrl-names = "default";

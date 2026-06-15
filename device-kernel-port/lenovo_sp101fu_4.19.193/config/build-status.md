@@ -17,9 +17,10 @@ builds" is confirmed; "it boots" is not.
 
 Artifacts produced by the last successful build:
 
-- `arch/arm64/boot/Image` — arm64 kernel image with valid `ARMd` boot magic, ~27 MB.
+- `arch/arm64/boot/Image` — arm64 kernel image with valid `ARMd` boot magic,
+  31,367,176 bytes after the Huion/HDX trim rebuild.
 - `vmlinux` — `Linux version 4.19.232`, built with GCC 15.2.0, GNU ld 2.46.
-- `arch/arm64/boot/dts/rockchip/rk3566-lenovo-sp101fu.dtb`.
+- `arch/arm64/boot/dts/rockchip/rk3566-lenovo-sp101fu.dtb` — 122,427 bytes.
 - Loadable modules: `bcmdhd.ko` (Wi-Fi), Mali memory group manager.
 
 The integrated tree includes the previously missing HTFY EBC stack and the
@@ -38,27 +39,43 @@ blocker for any 5.10/6.1/mainline forward port (see source-recovery note).
   tree lives on a case-sensitive sparse image mounted into the machine over
   virtiofs. `ARCH=arm64`, out-of-tree `O=` build directory.
 
-## Two failures that had to be solved to build with GCC
+## GCC build fixes
 
 1. Warning wall. The tree wraps the compiler with `scripts/gcc-wrapper.py`,
    which turns any non-whitelisted GCC warning into
    `error, forbidden warning:<file:line>` and aborts. GCC 15 against this 4.19
    tree raises warnings the vendor's Clang 11 whitelist never saw, mainly
    `-Warray-compare` (e.g. `extable.c`) and `-Waddress` (e.g. `profile.c`,
-   `net/core/dev.c`). The successful build suppressed these by injecting a list
-   of `-Wno-*` flags through the `KCFLAGS` environment variable at `make` time.
-
-   IMPORTANT: those `-Wno-*` flags are NOT yet persisted in the source tree's
-   Makefiles. A clean build in a fresh environment that forgets the `KCFLAGS`
-   string will hit the warning wall again. Hardening this into the tree
-   (`arch/arm64/Makefile` or the wrapper) is required for a reproducible
-   baseline.
+   `net/core/dev.c`). This is now hardened in the integrated build trees'
+   `arch/arm64/Makefile` via `cc-disable-warning`, so supported GCC versions add
+   the needed `-Wno-*` flags without relying on external `KCFLAGS`.
 
 2. Link error in `huiontablet`. `huion_tool.c` referenced the bare
    `i2c_connect_client` symbol exported by the `gt9xx` driver, but the build
    uses `GOODIX_GTX8` (not `GT9XX`), so the symbol was undefined and produced
    AArch64 "dangerous relocation" link errors. Fixed by renaming the reference
    to the driver-local `i2c_connect_client_hn` defined in `huiontablet.c`.
+
+## Current trim state
+
+- Goodix GTX8/GT9886 touch remains enabled.
+- Huion (`huion@8`) and HDX8801 (`hdx8801@11`) are disabled in the SP101FU DTS.
+- `CONFIG_TOUCHSCREEN_HUION_PANELS` and `CONFIG_TOUCHSCREEN_HDX8801` are disabled
+  in `sp101fu-live-required.config` and in the active build output `.config`.
+- `olddefconfig` preserves that trim state in
+  `/private/tmp/rk3566_kernel_build/out-sp101fu-4.19-htfy/.config`.
+- A clean `make Image dtbs` rebuild without `KCFLAGS` completed after the trim;
+  the active output contains Goodix GTX8 objects and no Huion/HDX touchscreen
+  objects.
+
+## Rebuild notes
+
+The trim rebuild log is
+`logs/trim-rebuild-no-kcflags.log`. It contains host-tool/OpenSSL warnings,
+pre-existing DTS warnings for unrelated RK3566 EVB DTBs, repeated ImgTec Rogue
+`-Wsizeof-pointer-div` warnings, and GNU ld RWX segment warnings for
+`vmlinux`. No `gcc-wrapper.py` `forbidden warning`, undefined reference,
+dangerous relocation, or make failure was present in the checked log.
 
 ## Toolchain choice
 
@@ -72,8 +89,6 @@ identity and are not targets to reproduce.
 
 ## Known follow-ups
 
-- Persist the `-Wno-*` warning suppression into the source tree so a clean
-  checkout builds without the external `KCFLAGS` string.
 - Continue trimming config and DTS to hardware actually present on the device
   (see `../compare/dtb-and-config-comparison.md` for the live hardware map).
 - The version string is `4.19.232` from the integrated tree, while the live
