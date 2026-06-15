@@ -67,6 +67,9 @@ blocker for any 5.10/6.1/mainline forward port (see source-recovery note).
 - A clean `make Image dtbs` rebuild without `KCFLAGS` completed after the trim;
   the active output contains Goodix GTX8 objects and no Huion/HDX touchscreen
   objects.
+- The keep/trim rationale is tracked in
+  `../compare/hardware-trim-audit.md`; it is based on the already captured live
+  DTB, `/proc/config.gz`, root `dmesg`, `getevent -pl`, and module evidence.
 
 ## Rebuild notes
 
@@ -89,8 +92,9 @@ identity and are not targets to reproduce.
 
 ## Known follow-ups
 
-- Continue trimming config and DTS to hardware actually present on the device
-  (see `../compare/dtb-and-config-comparison.md` for the live hardware map).
+- Continue trimming config and DTS only where the existing live evidence or a
+  new rooted ADB capture proves hardware is absent or an alternate probe is
+  unused. Use `../compare/hardware-trim-audit.md` as the decision log.
 - The version string is `4.19.232` from the integrated tree, while the live
   device reports `4.19.193`. Both are 4.19-stable; the difference is not a
   blocker for this baseline.

@@ -23,6 +23,8 @@ integrated into the build tree, which now compiles to a complete kernel Image; s
 - `validation-public-supported.txt`: public subset validation.
 - `validation-live-required.txt`: integrated-tree required fragment and rebuild
   validation.
+- `../compare/hardware-trim-audit.md`: evidence-based keep/trim decisions for
+  hardware that is present, absent, or ambiguous on the rooted SP101FU.
 
 ## Validation result
 
@@ -117,6 +119,8 @@ Module compatibility note:
    exported symbol CRCs compatible, or rebuild BCMDHD from source.
 7. DONE: trim config and DTS to hardware actually present for the first pass:
    camera, fingerprint, Huion touch, and HDX8801 touch are disabled while
-   Goodix GT9886 remains enabled. Carry this trimmed baseline forward toward
-   newer/mainline kernels. The `ht_ebc.px` binary blob remains the hard blocker
-   for that forward port.
+   Goodix GT9886 remains enabled. Future trims should follow
+   `../compare/hardware-trim-audit.md`: first use the captured live evidence,
+   then collect fresh rooted ADB evidence only for gaps. Carry this trimmed
+   baseline forward toward newer/mainline kernels. The `ht_ebc.px` binary blob
+   remains the hard blocker for that forward port.

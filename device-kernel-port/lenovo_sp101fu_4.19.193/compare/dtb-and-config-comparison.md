@@ -94,6 +94,8 @@ The live vendor config also enables some reference-platform and multi-panel
 probe options that are not target hardware for this tablet. The tailored SP101FU
 build keeps fingerprint, UVC camera, Rockchip CIF, RKISP, RK628 CSI, Huion
 touch, and HDX8801 touch disabled, while Goodix GTX8/GT9886 remains enabled.
+The ongoing keep/trim decision log is `hardware-trim-audit.md`; use it before
+collecting duplicate ADB evidence.
 
 Stable/common config facts:
 

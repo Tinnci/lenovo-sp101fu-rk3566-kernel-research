@@ -47,6 +47,9 @@ DTS while Goodix remains enabled.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/compare/dtb-and-config-comparison.md`
   summarizes the live DTB and kernel config against public Rockchip E Ink
   candidates.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/compare/hardware-trim-audit.md`
+  records the evidence-driven keep/trim decisions for the current SP101FU
+  baseline and points to the already captured rooted-device evidence.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/README.md` documents the
   config workflow from the rooted device to public Rockchip 4.19 builds.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/build-status.md` records the
