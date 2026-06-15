@@ -53,9 +53,18 @@ does not become the running kernel. The most likely next investigations are:
 - keep using `fastboot boot` for the next experiment unless a separate issue
   explicitly approves flashing an inactive slot.
 
+Follow-up format analysis found that the stock boot image is Android boot header
+v2 with a Rockchip `RSCE` resource image in the `second` field. The resource
+contains `rk-kernel.dtb`, and stock keeps that DTB byte-for-byte identical to the
+Android header DTB. The first test image replaced only the header DTB, leaving
+the resource DTB stock, so the next integrated-image test should regenerate
+`resource.img` and keep both DTB locations consistent.
+
+See `boot-image-format-analysis.md` for the detailed packaging notes and next
+experiment order.
+
 ## Safety outcome
 
 The first test met the non-destructive requirement. The device returned to the
 stock system, ADB/root remained available, and the checked boot/vbmeta
 partitions were unchanged.
-
