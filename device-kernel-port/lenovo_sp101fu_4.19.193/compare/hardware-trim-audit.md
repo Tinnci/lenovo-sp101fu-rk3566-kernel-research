@@ -21,6 +21,7 @@ answerable from these files:
 | `../root-evidence/text/getevent_pl.txt` | Actual input devices exposed to Android/Linux. |
 | `../root-evidence/text/proc_modules.txt` | Runtime external modules. |
 | `../root-evidence/manifests/key-blobs.md` | Firmware/module blobs needed by confirmed hardware, without publishing blobs. |
+| `hardware-runtime-map.md` | Sanitized bus/input/interrupt map from a fresh rooted capture before the first boot test. |
 
 Some root sysfs debug captures in `../root-evidence/text/*.stderr.txt` failed
 with permission or path errors; treat those as gaps, not negative evidence.
@@ -52,5 +53,6 @@ When trimming further, prefer this sequence:
    failed alternate-panel probes, disable the DTS node and Kconfig symbol rather
    than deleting source code.
 4. If evidence is ambiguous, keep the feature until the current build has been
-   boot-tested on hardware and a fresh rooted ADB capture closes the gap.
-
+   boot-tested on hardware and a fresh rooted ADB capture closes the gap. The
+   first `fastboot boot` test did not run the integrated kernel, so ambiguous
+   E Ink PMIC/display pieces remain `defer`.

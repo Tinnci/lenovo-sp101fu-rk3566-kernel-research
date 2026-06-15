@@ -25,6 +25,9 @@ integrated into the build tree, which now compiles to a complete kernel Image; s
   validation.
 - `../compare/hardware-trim-audit.md`: evidence-based keep/trim decisions for
   hardware that is present, absent, or ambiguous on the rooted SP101FU.
+- `boot-test-plan.md`, `module-abi-status.md`, `../compare/hardware-runtime-map.md`,
+  and `boot-test-result.md`: first hardware-validation pass and its current
+  result.
 
 ## Validation result
 
@@ -124,3 +127,5 @@ Module compatibility note:
    then collect fresh rooted ADB evidence only for gaps. Carry this trimmed
    baseline forward toward newer/mainline kernels. The `ht_ebc.px` binary blob
    remains the hard blocker for that forward port.
+8. TODO: investigate why the first non-destructive `fastboot boot` accepted the
+   generated image but returned to the stock `4.19.193` kernel.

@@ -50,11 +50,22 @@ DTS while Goodix remains enabled.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/compare/hardware-trim-audit.md`
   records the evidence-driven keep/trim decisions for the current SP101FU
   baseline and points to the already captured rooted-device evidence.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/compare/hardware-runtime-map.md`
+  summarizes the rooted runtime bus/input/interrupt evidence used to validate
+  the reconstructed DTS before boot testing.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/compare/forward-port-matrix.md`
+  records the 4.19, 5.10/6.1, Android/GKI, PineNote, and mainline migration
+  decision matrix.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/README.md` documents the
   config workflow from the rooted device to public Rockchip 4.19 builds.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/build-status.md` records the
   self-compilable baseline: build environment, produced artifacts, and the
   GCC-specific issues (warning wall, huiontablet link fix) that were solved.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/config/boot-test-plan.md` and
+  `config/boot-test-result.md` record the first non-destructive `fastboot boot`
+  test plan and result.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/config/module-abi-status.md`
+  records the current BCMDHD/Mali module ABI decision for hardware boot tests.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/sp101fu-live-required.config`
   tracks the tailored live-machine config intent for the integrated tree,
   including the current Goodix-enabled, Huion/HDX-disabled trim state.

@@ -11,9 +11,11 @@ source tree using a GCC cross toolchain. This is the self-compilable baseline
 the project targets, and the starting point for trimming unused hardware and,
 later, migrating to newer kernels.
 
-NOT YET VERIFIED ON HARDWARE: the build completes and the image has a valid
-arm64 boot header, but it has not been flashed to or booted on the device. "It
-builds" is confirmed; "it boots" is not.
+HARDWARE TEST RESULT: the build completes and the image has a valid arm64 boot
+header. A non-destructive `fastboot boot` test image was accepted by the
+bootloader, but the device returned to the stock `4.19.193` kernel rather than
+running the integrated `4.19.232` test kernel. "It builds" is confirmed; "it
+boots as the running kernel" is not yet confirmed. See `boot-test-result.md`.
 
 Artifacts produced by the last successful build:
 
@@ -92,6 +94,8 @@ identity and are not targets to reproduce.
 
 ## Known follow-ups
 
+- Investigate why the temporary `fastboot boot` image falls back to the stock
+  kernel before considering any inactive-slot flash.
 - Continue trimming config and DTS only where the existing live evidence or a
   new rooted ADB capture proves hardware is absent or an alternate probe is
   unused. Use `../compare/hardware-trim-audit.md` as the decision log.
