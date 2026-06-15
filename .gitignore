@@ -17,6 +17,13 @@
 !/device-kernel-port/lenovo_sp101fu_4.19.193/config/*.config
 !/device-kernel-port/lenovo_sp101fu_4.19.193/config/validation-*.txt
 
+!/device-kernel-port/lenovo_sp101fu_4.19.193/dts/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/dts/*.md
+!/device-kernel-port/lenovo_sp101fu_4.19.193/dts/rk3566-lenovo-sp101fu.dts
+
+!/device-kernel-port/lenovo_sp101fu_4.19.193/drivers/
+!/device-kernel-port/lenovo_sp101fu_4.19.193/drivers/*.md
+
 !/device-kernel-port/lenovo_sp101fu_4.19.193/scripts/
 !/device-kernel-port/lenovo_sp101fu_4.19.193/scripts/*.sh
 

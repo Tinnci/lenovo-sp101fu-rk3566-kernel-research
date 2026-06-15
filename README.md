@@ -36,6 +36,12 @@ WH2506D Hall, Huion/HDX input pieces, sensors, and Goodix fingerprint support.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/sp101fu-public-4.19-supported.config`
   is the subset verified to survive `olddefconfig` in the current public
   Rockchip 4.19 checkout.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/dts/rk3566-lenovo-sp101fu.dts`
+  is a sanitized source DTS candidate derived from the live FDT and the public
+  `rk3566-rk817-eink-w103` baseline.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/drivers/source-recovery.md`
+  records public source and prebuilt-object matches for the missing Lenovo/HT
+  driver stack.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/root-evidence/manifests/key-blobs.md`
   records original vendor blob paths, sizes, and hashes without publishing the
   blobs themselves.

@@ -1,0 +1,501 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Lenovo SP101FU / Lenovo Smart Paper / Louvre candidate DTS.
+ *
+ * This source is derived from the live SP101FU FDT and the public Rockchip
+ * rk3566-rk817-eink-w103 baseline. It deliberately excludes bootloader-injected
+ * runtime state from /chosen, /memory, initrd, serial-number, and MAC-bearing
+ * Android bootargs.
+ */
+
+#include "rk3566-rk817-eink-w103.dts"
+
+/ {
+	model = "Rockchip RK3566 EINK Boe 10.3 DVT1 Board II";
+	compatible = "rockchip,rk3566-rk817-eink", "rockchip,rk3566";
+
+	/delete-node/ backlight;
+	/delete-node/ hall-mh248;
+	/delete-node/ vcc-tp-regulator;
+
+	charge-animation {
+		rockchip,auto-wakeup-interval = <10>;
+	};
+
+	chosen {
+		/delete-property/ bootargs;
+	};
+
+	adc-keys {
+		status = "disabled";
+	};
+
+	gpio-leds {
+		status = "okay";
+		/delete-node/ led@2;
+
+		led-r {
+			gpios = <&gpio2 RK_PC0 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "battery-charging";
+			label = "led_r";
+			retain-state-suspended;
+		};
+	};
+
+	hall_wh2506d: hall-wh2506d {
+		status = "okay";
+		compatible = "hall-wh2506d";
+		pinctrl-names = "default";
+		pinctrl-0 = <&hall_irq_gpio>;
+		irq-gpio = <&gpio0 RK_PA0 IRQ_TYPE_EDGE_BOTH>;
+		hall-active = <1>;
+	};
+
+	bt_sound: bt-sound {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,format = "dsp_b";
+		simple-audio-card,bitclock-inversion = <1>;
+		simple-audio-card,mclk-fs = <256>;
+		simple-audio-card,name = "rockchip,bt";
+
+		simple-audio-card,cpu {
+			sound-dai = <&i2s2_2ch>;
+		};
+
+		sound2_master: simple-audio-card,codec {
+			sound-dai = <&bt_sco>;
+		};
+	};
+
+	bt_sco: bt-sco {
+		status = "okay";
+		compatible = "delta,dfbmcs320";
+		#sound-dai-cells = <0>;
+	};
+
+	pdm_mic_array: pdm-mic-array {
+		status = "okay";
+		compatible = "simple-audio-card";
+		simple-audio-card,name = "rockchip,pdm-mic-array";
+
+		simple-audio-card,cpu {
+			sound-dai = <&pdm>;
+		};
+
+		simple-audio-card,codec {
+			sound-dai = <&pdmics>;
+		};
+	};
+
+	pdmics: dummy-codec {
+		status = "okay";
+		compatible = "rockchip,dummy-codec";
+		#sound-dai-cells = <0>;
+	};
+
+	sdio-pwrseq {
+		reset-gpios = <&gpio0 RK_PD3 GPIO_ACTIVE_LOW>;
+	};
+
+	wireless-wlan {
+		rockchip,grf = <&grf>;
+		/delete-property/ wifi_chip_type;
+		pinctrl-0 = <&wifi_gpio>;
+		WIFI,vbat_gpio = <&gpio0 RK_PD5 GPIO_ACTIVE_HIGH>;
+		WIFI,host_wake_irq = <&gpio0 RK_PC5 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+
+	wireless-bluetooth {
+		/delete-property/ wifi-bt-power-toggle;
+		uart_rts_gpios = <&gpio2 RK_PB5 GPIO_ACTIVE_LOW>;
+		pinctrl-0 = <&uart1m0_rtsn>,
+			    <&bt_reset_gpio>,
+			    <&bt_wake_gpio>,
+			    <&bt_irq_gpio>;
+		pinctrl-1 = <&uart1_gpios>;
+		BT,reset_gpio = <&gpio0 RK_PC4 GPIO_ACTIVE_HIGH>;
+		BT,wake_gpio = <&gpio0 RK_PD4 GPIO_ACTIVE_HIGH>;
+		BT,wake_host_irq = <&gpio0 RK_PC3 GPIO_ACTIVE_HIGH>;
+		status = "okay";
+	};
+
+	backlight_warm: backlight-warm {
+		status = "okay";
+		compatible = "pwm-backlight";
+		pwms = <&pwm4 0 25000 0>;
+		brightness-levels = <0 9 18 60 100 100 100 100 101 101 101 101 101 101 102 102 102 102 103 103 103 103 104 104 105 105 105 105 106 107 108 109 110 111 112 114 116 118 120 122 124 126 129 131 134 136 139 141 144 146 149 151 154 156 158 160 162 164 166 169 173 176 180 183 187 190 194 198 202 206 210 224 238 252 266 280 294 299 305 310 316 321 327 336 346 356 366 375 385 394 403 412 421 430 440 451 463 475 487 498 510 523 537 550 564 577 591 604 618 631 645 658 672 688 705 721 738 754 771 796 822 847 873 898 924 943 962 981 1000 1019 1038 1075 1113 1150 1188 1225 1263 1316 1370 1423 1477 1530 1584 1611 1639 1672 1695 1722 1750 1794 1839 1883 1927 1972 2016 2068 2120 2172 2224 2276 2328 2436 2545 2653 2761 2869 2978 3053 3129 3205 3281 3356 3432 3485 3539 3592 3646 3700 3754 3838 3922 4006 4091 4175 4260 4414 4568 4722 4876 5030 5184 5393 5603 5813 6023 6232 6442 6442>;
+		default-brightness-level = <0>;
+	};
+
+	backlight_cold: backlight-cold {
+		status = "okay";
+		compatible = "pwm-backlight";
+		pwms = <&pwm5 0 25000 0>;
+		brightness-levels = <0 9 18 60 100 100 100 100 101 101 101 101 101 101 102 102 102 102 103 103 103 103 104 104 105 105 106 106 107 107 108 108 109 109 110 112 115 117 120 122 125 123 132 136 140 143 147 152 157 162 167 172 177 183 189 195 201 207 213 222 232 241 251 260 270 278 286 294 302 310 318 325 332 339 346 353 360 368 377 386 395 403 412 422 432 441 451 461 471 482 493 504 515 526 537 549 562 574 587 599 612 627 643 658 674 689 705 721 737 753 769 785 775 801 825 850 874 899 923 948 966 984 1002 1020 1038 1056 1086 1116 1146 1176 1206 1236 1270 1304 1341 1372 1406 1440 1475 1510 1545 1580 1615 1650 1678 1707 1735 1764 1792 1821 1870 1920 1969 2019 2068 2118 2159 2200 2241 2282 2323 2364 2452 2540 2628 2716 2804 2892 2955 3019 3083 3147 3210 3274 3343 3413 3482 3551 3620 3690 3762 3834 3906 3978 4050 4122 4254 4386 4518 4650 4782 4914 5090 5266 5442 5618 5794 5970 6216 6463 6709 6956 7202 7449 7674 7900 8125 8351 8576 8802 9101 9401 9701 10001 10300 10600 10600>;
+		default-brightness-level = <0>;
+	};
+};
+
+&ebc {
+	assigned-clocks = <&cru CPLL_333M>, <&cru DCLK_EBC>;
+	assigned-clock-rates = <34000000>, <34000000>;
+	status = "okay";
+};
+
+&ebc_dev {
+	pmic = <&sy7636a>;
+	status = "okay";
+
+	panel,width = <1872>;
+	panel,height = <1404>;
+	panel,vir_width = <1872>;
+	panel,vir_height = <1404>;
+	panel,sdck = <34000000>;
+	panel,lsl = <18>;
+	panel,lbl = <17>;
+	panel,ldl = <234>;
+	panel,lel = <15>;
+	panel,gdck-sta = <34>;
+	panel,lgonl = <192>;
+	panel,fsl = <1>;
+	panel,fbl = <4>;
+	panel,fdl = <1404>;
+	panel,fel = <1>;
+	panel,mirror = <1>;
+	panel,panel_16bit = <1>;
+	panel,panel_color = <0>;
+	panel,width-mm = <210>;
+	panel,height-mm = <157>;
+	panel,dpi = <220>;
+	panel,vcom-mv = <1670>;
+};
+
+&i2c1 {
+	status = "okay";
+	clock-frequency = <400000>;
+	/delete-node/ wacom@9;
+
+	ls_ltr578: light@53 {
+		status = "okay";
+		compatible = "ls_ltr578";
+		reg = <0x53>;
+		type = <SENSOR_TYPE_LIGHT>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&ltr578_irq_gpio>;
+		irq-gpio = <&gpio0 RK_PA5 IRQ_TYPE_LEVEL_LOW>;
+		irq_enable = <0>;
+		poll_delay_ms = <100>;
+		power-off-in-suspend = <1>;
+	};
+
+	aw9610x_sar: pressure@12 {
+		status = "disabled";
+		compatible = "awinic,aw9610x_sar";
+		reg = <0x12>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&aw9610x_irq_gpio>;
+		irq-gpio = <&gpio0 RK_PC7 IRQ_TYPE_LEVEL_LOW>;
+		aw9610x,using-firmware;
+		channel_use_flag = <0x1f>;
+		sar-num = <0>;
+	};
+
+	et7303: et7303@4e {
+		status = "okay";
+		compatible = "etek,et7303";
+		reg = <0x4e>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <RK_PC6 IRQ_TYPE_LEVEL_LOW>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&et7303_int>;
+
+		connector {
+			data-role = "device";
+			power-role = "sink";
+			try-power-role = "sink";
+			sink-pdos = <0x040190c8>;
+			op-sink-microwatt = <10000000>;
+		};
+	};
+
+	ls_stk3x1x: light@48 {
+		status = "okay";
+		compatible = "ls_stk3x1x";
+		reg = <0x48>;
+		type = <SENSOR_TYPE_LIGHT>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&stk3x1x_irq_gpio>;
+		irq-gpio = <&gpio0 RK_PA6 IRQ_TYPE_LEVEL_LOW>;
+		irq_enable = <0>;
+		als_threshold_high = <100>;
+		als_threshold_low = <10>;
+		als_ctrl_gain = <2>;
+		poll_delay_ms = <150>;
+		power-off-in-suspend = <1>;
+	};
+
+	touchscreen: goodix-gtx8@5d {
+		compatible = "goodix,gt9886";
+		reg = <0x5d>;
+		status = "okay";
+		pinctrl-names = "default";
+		pinctrl-0 = <&tp_gpio>;
+		goodix,reset-gpio = <&gpio0 RK_PB5 GPIO_ACTIVE_LOW>;
+		goodix,irq-gpio = <&gpio0 RK_PC1 IRQ_TYPE_LEVEL_LOW>;
+		goodix,irq-flags = <IRQ_TYPE_EDGE_FALLING>;
+		goodix,panel-max-x = <1404>;
+		goodix,panel-max-y = <1872>;
+		goodix,panel-max-w = <255>;
+		goodix,x2x;
+		tp-support-wakeup;
+	};
+};
+
+&i2c3 {
+	status = "okay";
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c3m1_xfer>;
+
+	wacom_10s12mi: wacom@9 {
+		status = "okay";
+		compatible = "wacom,10S12MI";
+		reg = <0x09>;
+		hid-descr-addr = <1>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&emr_gpio>;
+		gpio_detect = <&gpio0 RK_PA4 GPIO_ACTIVE_LOW>;
+		gpio_intr = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+		gpio_rst = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
+		revert_x = <1>;
+		revert_y = <1>;
+		xy_exchange = <0>;
+		wacom-support-wakeup;
+	};
+
+	huion: huion@8 {
+		status = "okay";
+		compatible = "huion,hgtxx";
+		reg = <0x08>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&emr_gpio>;
+		interrupt-parent = <&gpio0>;
+		touch-gpio = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+		reset-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
+		huion,tp-size = <101>;
+		huion,max-x = <1404>;
+		huion,max-y = <1872>;
+		huion,configfile-num = <1>;
+		revert_x = <1>;
+		revert_y = <1>;
+		xy_exchange = <0>;
+	};
+
+	hdx8801: hdx8801@11 {
+		status = "okay";
+		compatible = "hdx8801_touch";
+		reg = <0x11>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&emr_gpio>;
+		gpio_intr = <&gpio0 RK_PB6 GPIO_ACTIVE_LOW>;
+		gpio_rst = <&gpio0 RK_PB0 GPIO_ACTIVE_LOW>;
+		revert_x = <0>;
+		revert_y = <1>;
+		xy_exchange = <0>;
+	};
+
+	tps65185@68 {
+		status = "okay";
+		compatible = "ti,tps65185";
+		reg = <0x68>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&tps65185_gpio>;
+		/delete-property/ wakeup-gpios;
+		/delete-property/ int-gpios;
+		/delete-property/ poweren-gpios;
+		powerup-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
+		vcomctl-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+		error-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_LOW>;
+	};
+
+	sy7636a: sy7636a@62 {
+		status = "okay";
+		compatible = "sy7636a";
+		reg = <0x62>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&tps65185_gpio>;
+		powerup-gpios = <&gpio3 RK_PB1 GPIO_ACTIVE_HIGH>;
+		vcomctl-gpios = <&gpio4 RK_PB2 GPIO_ACTIVE_HIGH>;
+		error-gpios = <&gpio3 RK_PA7 GPIO_ACTIVE_HIGH>;
+		vdd-gpios = <&gpio3 RK_PB4 GPIO_ACTIVE_HIGH>;
+		pmicon-gpios = <&gpio3 RK_PB0 GPIO_ACTIVE_HIGH>;
+	};
+};
+
+&i2c4 {
+	status = "okay";
+
+	gs_mxc6655xa: gsensor@15 {
+		status = "okay";
+		compatible = "gs_mxc6655xa";
+		reg = <0x15>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&mxc6655xa_irq_gpio>;
+		irq-gpio = <&gpio0 RK_PD6 IRQ_TYPE_LEVEL_LOW>;
+		irq_enable = <0>;
+		wakeup-source;
+		poll_delay_ms = <20>;
+		type = <SENSOR_TYPE_ACCEL>;
+		power-off-in-suspend = <1>;
+		layout = <8>;
+	};
+};
+
+&i2c5 {
+	status = "disabled";
+	/delete-node/ sensor@4c;
+	/delete-node/ tsc@24;
+};
+
+&spi2 {
+	status = "okay";
+	max-freq = <48000000>;
+
+	fingerprint: goodix_fp@0 {
+		compatible = "goodix,goodix-fp";
+		reg = <0>;
+		spi-max-frequency = <24000000>;
+		goodix,gpio_irq = <&gpio0 RK_PC2 GPIO_ACTIVE_LOW>;
+		goodix,gpio_reset = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
+		status = "disabled";
+	};
+};
+
+&i2s2_2ch {
+	status = "okay";
+	rockchip,clk-trcm = <1>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2s2m0_sclktx
+		     &i2s2m0_lrcktx
+		     &i2s2m0_sdi
+		     &i2s2m0_sdo>;
+};
+
+&pdm {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pdmm0_clk
+		     &pdmm0_clk1
+		     &pdmm0_sdi0
+		     &pdmm0_sdi1>;
+	rockchip,path-map = <1 0 2 3>;
+};
+
+&pinctrl {
+	/delete-node/ tsc;
+	/delete-node/ vcc-tp;
+
+	tps_pmic {
+		tps65185-gpio {
+			rockchip,pins =
+				<4 RK_PB2 RK_FUNC_GPIO &pcfg_pull_up>,
+				<3 RK_PA7 RK_FUNC_GPIO &pcfg_pull_up>,
+				<3 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>,
+				<3 RK_PB1 RK_FUNC_GPIO &pcfg_pull_up>,
+				<3 RK_PB4 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	sdio-pwrseq {
+		wifi-enable-h {
+			rockchip,pins = <0 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wireless-wlan {
+		wifi_gpio: wifi-gpio {
+			rockchip,pins =
+				<0 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>,
+				<0 RK_PD5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wireless-bluetooth {
+		uart1-gpios {
+			rockchip,pins = <2 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		bt-reset-gpio {
+			rockchip,pins = <0 RK_PC4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		bt-wake-gpio {
+			rockchip,pins = <0 RK_PD4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		bt-irq-gpio {
+			rockchip,pins = <0 RK_PC3 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	mxc6655xa {
+		mxc6655xa_irq_gpio: mxc6655xa-irq-gpio {
+			rockchip,pins = <0 RK_PD6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	sensors {
+		hall_irq_gpio: hall-irq-gpio {
+			rockchip,pins = <0 RK_PA0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		ltr578_irq_gpio: ltr578-irq-gpio {
+			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		stk3x1x_irq_gpio: stk3x1x-irq-gpio {
+			rockchip,pins = <0 RK_PA6 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		aw9610x_irq_gpio: aw9610x-irq-gpio {
+			rockchip,pins = <0 RK_PC7 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	typec {
+		et7303_int: et7303-int {
+			rockchip,pins = <0 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+	};
+
+	wacom {
+		emr_gpio: emr-gpio {
+			rockchip,pins =
+				<0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_up>,
+				<0 RK_PB6 RK_FUNC_GPIO &pcfg_pull_up>,
+				<0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	goodix {
+		tp_gpio: tp-gpio {
+			rockchip,pins =
+				<0 RK_PB5 RK_FUNC_GPIO &pcfg_pull_up>,
+				<0 RK_PC1 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+&pwm0 {
+	status = "disabled";
+};
+
+&pwm4 {
+	status = "okay";
+};
+
+&pwm5 {
+	status = "okay";
+};
