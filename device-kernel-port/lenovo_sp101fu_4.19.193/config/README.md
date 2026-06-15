@@ -72,15 +72,22 @@ The live kernel was built with Android Clang 11 and LLD 11:
 - `CONFIG_LD_IS_LLD=y`
 - `CONFIG_CLANG_VERSION=110002`
 
-Do not hand-edit generated compiler identity symbols. They are selected by the
-toolchain invocation. To match the vendor build more closely, use an Android
-Clang 11 based build instead of GCC. GCC 12/15 is useful for experiments, but it
-changes generated config symbols and exposes extra warnings in this 4.19 tree.
+These are vendor-build identity symbols, selected by the toolchain invocation;
+do not hand-edit them. Matching them exactly only matters for byte/ABI parity
+with the stock kernel, which is not this project's goal.
 
-## Current missing vendor driver set
+The self-compilable baseline builds with a GCC cross toolchain
+(`aarch64-linux-gnu-gcc` 15) instead. Building 4.19 with GCC 15 requires
+suppressing newer warnings that the vendor's Clang whitelist never saw, because
+the tree's `scripts/gcc-wrapper.py` treats any non-whitelisted warning as a
+fatal error. See `build-status.md` for the full build environment, the
+`-Wno-*`/`KCFLAGS` warning-wall workaround, and the huiontablet link fix.
 
-The current public Rockchip 4.19 tree does not contain the full Lenovo/HT board
-support required by the live DTB:
+## Vendor driver set (now integrated)
+
+The stock *public* Rockchip 4.19 tree does not contain the full Lenovo/HT board
+support required by the live DTB. The following symbols have no source in that
+tree:
 
 - `CONFIG_HTFY_EBC`
 - `CONFIG_PMIC_EBC_TPS65185`
@@ -94,13 +101,19 @@ support required by the live DTB:
 - `CONFIG_AW9610X_SAR`
 - `CONFIG_HS_WH2506D`
 
-Those are the highest-priority items to recover from firmware/source drops or
-replace with compatible upstream/vendor alternatives.
+These have since been recovered (mostly from `Supernote-Ratta/kernel_Nomad_Manta`,
+see `../drivers/source-recovery.md`) and integrated into the build tree, which
+now compiles into a complete kernel Image (see `build-status.md`). The HTFY EBC core
+ships as a prebuilt object (`ht_ebc.px`), so `CONFIG_HTFY_EBC` is satisfied by a
+binary blob, not open source — this is the remaining blocker for forward porting
+to 5.10/6.1/mainline.
 
 The running vendor config contains some reference-platform residue. The SP101FU
 hardware has no camera or fingerprint reader, so the tailored build keeps
 fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled even if
-they appear in `/proc/config.gz` or inherited candidate DTS files.
+they appear in `/proc/config.gz` or inherited candidate DTS files. The Huion and
+HDX8801 touch panels are likewise vendor multi-panel residue (their probes fail
+on this device, which uses Goodix GT9886) and are next to be trimmed.
 
 ## Validation in current public Rockchip 4.19 tree
 

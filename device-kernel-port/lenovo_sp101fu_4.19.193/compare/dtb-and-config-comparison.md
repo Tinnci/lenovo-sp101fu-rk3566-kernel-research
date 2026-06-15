@@ -110,8 +110,39 @@ Stable/common config facts:
 - `CONFIG_CHARGER_RK817=y`
 - `CONFIG_SND_SOC_RK817=y`
 
+## Live-device probe evidence (rooted ADB)
+
+I2C bus scan and `dmesg` from the running device map each address to a chip and
+show which drivers actually bind. This is the empirical basis for trimming:
+
+| I2C addr | Chip | Probe result | Keep? |
+| --- | --- | --- | --- |
+| `0-0020` | rk817/rk808 PMIC | chip id `0x8170` | keep |
+| `0-0041` | syr827 (buck) | ok | keep |
+| `1-0048` | stk3x1x light/prox | `initialized ok` | keep |
+| `1-0053` | ltr578 light/prox | `initialized ok` | keep |
+| `1-004e` | et7303 | present | keep |
+| `1-005d` | Goodix GT9886 touch | `input: goodix_ts` (event5) | keep |
+| `3-0009` | Wacom 10S12MI pen | `input: Wacom Pencil` (event3) | keep |
+| `3-0062` | sy7636a EBC PMIC | `papyrus_probe sy7636a` ok | keep |
+| `3-0068` | tps65185 EBC PMIC | `hw_init failed` (sy7636a used instead) | keep for now |
+| `4-0015` | mxc6655 accelerometer | `sensor_probe ... ok` | keep |
+| `3-0008` | hgtxx (Huion touch) | `Huion-Ts: probe ... failed with error 1` | **trim** |
+| `3-0011` | hdx8801_touch | `HDX Driver:get_hdx_devinfo error` | **trim** |
+
+`/proc/modules` shows only `bcmdhd` loaded; vendor `modules.load` is just
+`mali_kbase` + `bcmdhd`. No camera or fingerprint device probes at all. Input
+devices present: hall-key, rk805 pwrkey, gsensor, Wacom Pencil, lightsensor,
+goodix_ts. The Huion (`3-0008`) and HDX8801 (`3-0011`) touch driver probes both
+fail, confirming they are vendor multi-panel residue and safe to disable.
+
 ## Current conclusion
 
-Use `rk3566-rk817-eink-w103.dts` only as the closest public starting point. A working Lenovo SP101FU kernel needs a Lenovo/HT board DTS derived from the live FDT plus the vendor driver/Kconfig set for HTFY EBC, PMIC EBC, Wacom 10S12MI, Goodix GTX8/GT9886, Huion/HDX pen stack, WH2506D Hall, Lenovo frontlight, and sensors.
-
-The public Rockchip 4.19 tree is not sufficient by itself for a bootable, fully functional replacement kernel.
+Use `rk3566-rk817-eink-w103.dts` only as the closest public starting point. A
+working Lenovo SP101FU kernel needs a Lenovo/HT board DTS derived from the live
+FDT plus the vendor driver/Kconfig set for HTFY EBC, PMIC EBC, Wacom 10S12MI,
+Goodix GTX8/GT9886, WH2506D Hall, Lenovo frontlight, and sensors. That driver
+set has now been integrated and the tree builds a complete kernel Image (see
+`../config/build-status.md`); the public Rockchip 4.19 tree alone is still not
+sufficient. The Huion/HDX touch panels can be trimmed (probes fail on this
+hardware), continuing the camera/fingerprint trimming already done.

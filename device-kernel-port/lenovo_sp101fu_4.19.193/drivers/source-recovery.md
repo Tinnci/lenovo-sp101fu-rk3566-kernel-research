@@ -95,9 +95,16 @@ trees. They are valuable for reproducing the vendor driver shape, but
 
 ## Porting implication
 
-For a same-generation 4.19 experiment, the fastest path is to integrate the
-Nomad/Manta source set into a private build tree and test whether `ht_ebc.px`
-links against the selected Rockchip 4.19 base and the SP101FU DTS.
+For a same-generation 4.19 baseline this is DONE: the Nomad/Manta source set was
+integrated into a private build tree, `ht_ebc.px` links against the Rockchip
+4.19 base and the SP101FU DTS, and the tree builds a complete kernel Image (see
+`../config/build-status.md`). Live-device probe evidence confirms the integrated
+drivers match real hardware: `goodix_ts`/`gtx8` (GT9886) and `wacom_pencil`
+(10S12MI) register input devices, `sy7636a` EBC PMIC probes (while the
+alternative `tps65185` hw_init fails), and the LTR578/STK3x1x light sensors and
+MXC6655 accelerometer probe successfully. The Huion (`3-0008`) and HDX8801
+(`3-0011`) touch probes fail on this device, confirming they are unused
+multi-panel residue.
 
 For a maintainable 5.10, 6.1, or mainline port, `ht_ebc.px` remains the hard
 blocker. The surrounding PMIC, Wacom, Goodix, Huion, HDX, Hall, light/proximity,

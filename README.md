@@ -8,20 +8,37 @@ firmware blobs. It contains only small text artifacts needed to track the kernel
 porting work: analysis notes, config fragments, validation reports, a collection
 script, and a path/hash inventory of blobs kept outside the public repo.
 
+## Goal
+
+Establish a **self-compilable 4.19 baseline** for the SP101FU that we control,
+then trim hardware the device does not have and migrate forward toward newer
+and eventually mainline kernels. The aim is a maintainable, independently
+buildable kernel, not byte-for-byte parity with the Lenovo/HTFY vendor kernel.
+
 ## Current Finding
 
-The closest public board baseline found so far is `rk3566-rk817-eink-w103`, but
-the live tablet is not a byte-for-byte match. The device reports:
+A complete arm64 kernel now builds from an integrated HTFY/Rockchip 4.19 source
+tree (`4.19.232`, based on the `Supernote-Ratta/kernel_Nomad_Manta` HT E Ink
+source set plus the recovered vendor drivers) using a GCC 15 cross toolchain.
+See `device-kernel-port/lenovo_sp101fu_4.19.193/config/build-status.md` for the
+build environment and the two GCC-specific issues that had to be solved. The
+public Rockchip 4.19 tree alone is still not sufficient — it lacks the
+Lenovo/HT board drivers (HTFY EBC stack, TPS65185/SY7636A EBC PMIC glue, Goodix
+GTX8/GT9886 touch, Wacom 10S12MI pen, WH2506D Hall, Huion/HDX input, sensors) —
+which is why the integrated vendor tree is used. The HTFY EBC core ships as a
+prebuilt object (`ht_ebc.px`) and remains the hard blocker for forward porting.
+
+The live tablet is not a byte-for-byte match for any public board. It reports:
 
 - board model: `Rockchip RK3566 EINK Boe 10.3 DVT1 Board II`
 - kernel: `4.19.193`
-- compiler: Android Clang 11 / LLD 11
+- vendor compiler: Android Clang 11 / LLD 11 (our baseline builds with GCC)
 - shared baseline: `compatible = "rockchip,rk3566-rk817-eink", "rockchip,rk3566"`
 
-The public Rockchip 4.19 tree does not contain several Lenovo/HT board-specific
-drivers needed by the live DTB and kernel config, including the HTFY EBC stack,
-TPS65185/SY7636A EBC PMIC glue, Goodix GTX8/GT9886 touch, Wacom 10S12MI pen,
-WH2506D Hall, Huion/HDX input pieces, sensors, and Goodix fingerprint support.
+Hardware confirmed absent on the live device (rooted ADB evidence) and disabled
+in our config/DTS: camera (RKISP/CIF/CSI) and fingerprint reader. The Huion and
+HDX8801 touch panels are vendor multi-panel residue whose probes fail on this
+device (it uses Goodix GT9886); they are slated for trimming next.
 
 ## Published Materials
 
@@ -30,6 +47,9 @@ WH2506D Hall, Huion/HDX input pieces, sensors, and Goodix fingerprint support.
   candidates.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/README.md` documents the
   config workflow from the rooted device to public Rockchip 4.19 builds.
+- `device-kernel-port/lenovo_sp101fu_4.19.193/config/build-status.md` records the
+  self-compilable baseline: build environment, produced artifacts, and the
+  GCC-specific issues (warning wall, huiontablet link fix) that were solved.
 - `device-kernel-port/lenovo_sp101fu_4.19.193/config/sp101fu-live-required.config`
   tracks the live machine-required config intent, including missing vendor
   symbols.

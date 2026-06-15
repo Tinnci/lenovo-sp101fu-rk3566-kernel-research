@@ -6,11 +6,12 @@ Use the live `/proc/config.gz` as the truth source, but do not treat every line
 as something that can be enabled in the public Rockchip tree. Kconfig can only
 enable code that exists in the selected source tree.
 
-The current public Rockchip 4.19 checkout can preserve the generic RK3566,
-RK817, BCMDHD, CPUFreq/devfreq, Mali/Bifrost baseline, and Android kernel
-settings. It cannot preserve the Lenovo/HT board-specific E Ink, touch, pen,
-and sensor symbols without importing the missing vendor driver sources and
-Kconfig entries.
+The *public* Rockchip 4.19 checkout can preserve the generic RK3566, RK817,
+BCMDHD, CPUFreq/devfreq, Mali/Bifrost baseline, and Android kernel settings. It
+cannot preserve the Lenovo/HT board-specific E Ink, touch, pen, and sensor
+symbols on its own. Those vendor drivers have since been recovered and
+integrated into the build tree, which now compiles to a complete kernel Image; see
+`build-status.md`.
 
 ## Files created
 
@@ -91,15 +92,20 @@ Module compatibility note:
 - Since `/proc/modules` only lists `bcmdhd`, do not assume the vendor
   `mali_kbase.ko` file is the active GPU driver on the running system.
 
-## Recommended porting sequence
+## Porting sequence
 
 1. Keep using the live config as the base `.config`.
 2. Merge `sp101fu-public-4.19-supported.config` for public Rockchip builds.
 3. Derive a Lenovo board DTS from `live-fdt.dts`, not directly from `w103`.
-4. Import or recreate missing drivers before expecting
-   `sp101fu-live-required.config` to survive Kconfig:
-   HTFY EBC, TPS65185/SY7636A EBC PMIC glue, Wacom 10S12MI, Goodix GTX8,
-   Huion/HDX, WH2506D, LTR578/STK3x1x/AW9610X.
-5. Use Android Clang 11/LLD 11 if trying to reproduce the vendor kernel ABI.
+4. DONE: the missing vendor drivers (HTFY EBC, TPS65185/SY7636A EBC PMIC glue,
+   Wacom 10S12MI, Goodix GTX8, Huion/HDX, WH2506D, LTR578/STK3x1x/AW9610X) have
+   been integrated into the build tree, so `sp101fu-live-required.config` now
+   survives Kconfig and the tree builds a complete kernel Image (see `build-status.md`).
+5. The baseline builds with GCC. Android Clang 11/LLD 11 would only be needed
+   for byte/ABI parity with the stock kernel, which is not the goal.
 6. If preserving `bcmdhd.ko`, keep `UTS_RELEASE`, `PREEMPT`, `MODVERSIONS`, and
    exported symbol CRCs compatible, or rebuild BCMDHD from source.
+7. Trim config and DTS to hardware actually present (camera and fingerprint
+   already disabled; Huion/HDX touch next), then carry the trimmed baseline
+   forward toward newer/mainline kernels. The `ht_ebc.px` binary blob remains
+   the hard blocker for that forward port.
