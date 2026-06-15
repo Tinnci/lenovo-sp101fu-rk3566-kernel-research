@@ -360,17 +360,67 @@
 };
 
 &spi2 {
-	status = "okay";
-	max-freq = <48000000>;
+	status = "disabled";
+};
 
-	fingerprint: goodix_fp@0 {
-		compatible = "goodix,goodix-fp";
-		reg = <0>;
-		spi-max-frequency = <24000000>;
-		goodix,gpio_irq = <&gpio0 RK_PC2 GPIO_ACTIVE_LOW>;
-		goodix,gpio_reset = <&gpio2 RK_PC1 GPIO_ACTIVE_HIGH>;
-		status = "disabled";
-	};
+&csi2_dphy_hw {
+	status = "disabled";
+};
+
+&csi2_dphy0 {
+	status = "disabled";
+};
+
+&csi2_dphy1 {
+	status = "disabled";
+};
+
+&csi2_dphy2 {
+	status = "disabled";
+};
+
+&mipi_csi2 {
+	status = "disabled";
+};
+
+&rkcif {
+	status = "disabled";
+};
+
+&rkcif_mmu {
+	status = "disabled";
+};
+
+&rkcif_dvp {
+	status = "disabled";
+};
+
+&rkcif_dvp_sditf {
+	status = "disabled";
+};
+
+&rkcif_mipi_lvds {
+	status = "disabled";
+};
+
+&rkcif_mipi_lvds_sditf {
+	status = "disabled";
+};
+
+&rkisp {
+	status = "disabled";
+};
+
+&rkisp_mmu {
+	status = "disabled";
+};
+
+&rkisp_vir0 {
+	status = "disabled";
+};
+
+&rkisp_vir1 {
+	status = "disabled";
 };
 
 &i2s2_2ch {

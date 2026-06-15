@@ -9,8 +9,8 @@ enable code that exists in the selected source tree.
 The current public Rockchip 4.19 checkout can preserve the generic RK3566,
 RK817, BCMDHD, CPUFreq/devfreq, Mali/Bifrost baseline, and Android kernel
 settings. It cannot preserve the Lenovo/HT board-specific E Ink, touch, pen,
-sensor, and fingerprint symbols without importing the missing vendor driver
-sources and Kconfig entries.
+and sensor symbols without importing the missing vendor driver sources and
+Kconfig entries.
 
 ## Files created
 
@@ -45,12 +45,13 @@ The full live-required fragment drops these requested symbols:
 - `CONFIG_LS_LTR578`
 - `CONFIG_AW9610X_SAR`
 - `CONFIG_HS_WH2506D`
-- `CONFIG_INPUT_FINGERPRINT`
-- `CONFIG_FOCALTECH_FINGERPRINT`
-- `CONFIG_GOODIX_FINGERPRINT`
 
 This matches the public-source research: `rk3566-rk817-eink-w103` is the closest
 reference line, but it is not the Lenovo BOE DVT1 board.
+
+The vendor `/proc/config.gz` also enables reference-platform camera and
+fingerprint options, but this SP101FU hardware has neither. The tailored build
+keeps fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled.
 
 ## Root evidence collected
 
@@ -98,7 +99,7 @@ Module compatibility note:
 4. Import or recreate missing drivers before expecting
    `sp101fu-live-required.config` to survive Kconfig:
    HTFY EBC, TPS65185/SY7636A EBC PMIC glue, Wacom 10S12MI, Goodix GTX8,
-   Huion/HDX, WH2506D, LTR578/STK3x1x/AW9610X, Goodix fingerprint.
+   Huion/HDX, WH2506D, LTR578/STK3x1x/AW9610X.
 5. Use Android Clang 11/LLD 11 if trying to reproduce the vendor kernel ABI.
 6. If preserving `bcmdhd.ko`, keep `UTS_RELEASE`, `PREEMPT`, `MODVERSIONS`, and
    exported symbol CRCs compatible, or rebuild BCMDHD from source.

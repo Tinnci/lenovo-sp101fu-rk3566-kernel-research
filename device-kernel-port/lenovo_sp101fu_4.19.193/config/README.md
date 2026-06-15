@@ -93,11 +93,14 @@ support required by the live DTB:
 - `CONFIG_LS_STK3x1x`
 - `CONFIG_AW9610X_SAR`
 - `CONFIG_HS_WH2506D`
-- `CONFIG_INPUT_FINGERPRINT`
-- `CONFIG_GOODIX_FINGERPRINT`
 
 Those are the highest-priority items to recover from firmware/source drops or
 replace with compatible upstream/vendor alternatives.
+
+The running vendor config contains some reference-platform residue. The SP101FU
+hardware has no camera or fingerprint reader, so the tailored build keeps
+fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled even if
+they appear in `/proc/config.gz` or inherited candidate DTS files.
 
 ## Validation in current public Rockchip 4.19 tree
 

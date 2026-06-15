@@ -44,7 +44,8 @@ All three share:
 | ADC keys | disabled, thresholds look like `w103` | enabled | disabled but different thresholds | Do not blindly take either. |
 | LEDs | live `led_r` on different GPIO | `battery_charging` on GPIO3_PC5 | missing | Charging LED differs. |
 | Sensors | live has `ls_ltr578`, `ls_stk3x1x`, `awinic,aw9610x_sar`, `etek,et7303`, `gs_mxc6655xa` | only subset/different accelerometer | subset/different | Sensor stack is vendor-board-specific. |
-| Fingerprint | live has disabled `goodix,goodix-fp` under `/spi@fe620000` | missing | missing | Disabled in DTB but kernel config enables Goodix fingerprint. |
+| Fingerprint | live has disabled `goodix,goodix-fp` under `/spi@fe620000` | missing | missing | SP101FU has no fingerprint reader; keep SPI2 fingerprint and fingerprint drivers disabled. |
+| Camera | no camera hardware; inherited RKISP/CIF reference nodes may appear | camera reference path inherited from public board files | camera reference path inherited from public board files | Keep UVC, CIF, RKISP, and RK628 CSI disabled for the tailored build. |
 
 ## Bootloader-injected runtime data
 
@@ -88,8 +89,10 @@ Important live config symbols missing or changed in the public-source `olddefcon
 - `CONFIG_LS_STK3x1x=y`
 - `CONFIG_AW9610X_SAR=y`
 - `CONFIG_HS_WH2506D=y`
-- `CONFIG_INPUT_FINGERPRINT=y`
-- `CONFIG_GOODIX_FINGERPRINT=y`
+
+The live vendor config also enables some reference-platform options that are
+not target hardware for this tablet. The tailored SP101FU build keeps
+fingerprint, UVC camera, Rockchip CIF, RKISP, and RK628 CSI disabled.
 
 Stable/common config facts:
 
@@ -109,6 +112,6 @@ Stable/common config facts:
 
 ## Current conclusion
 
-Use `rk3566-rk817-eink-w103.dts` only as the closest public starting point. A working Lenovo SP101FU kernel needs a Lenovo/HT board DTS derived from the live FDT plus the vendor driver/Kconfig set for HTFY EBC, PMIC EBC, Wacom 10S12MI, Goodix GTX8/GT9886, Huion/HDX pen stack, WH2506D Hall, Lenovo frontlight, sensors, and Goodix fingerprint.
+Use `rk3566-rk817-eink-w103.dts` only as the closest public starting point. A working Lenovo SP101FU kernel needs a Lenovo/HT board DTS derived from the live FDT plus the vendor driver/Kconfig set for HTFY EBC, PMIC EBC, Wacom 10S12MI, Goodix GTX8/GT9886, Huion/HDX pen stack, WH2506D Hall, Lenovo frontlight, and sensors.
 
 The public Rockchip 4.19 tree is not sufficient by itself for a bootable, fully functional replacement kernel.
